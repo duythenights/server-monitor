@@ -16,9 +16,5 @@ export default defineConfig({
     },
     exclude: ['node_modules', 'dist', '.next', 'out', 'coverage'],
   },
-  plugins: [
-    swc.vite({
-      module: { type: 'nodenext' },
-    }),
-  ],
+  plugins: [swc.vite({})],
 });
