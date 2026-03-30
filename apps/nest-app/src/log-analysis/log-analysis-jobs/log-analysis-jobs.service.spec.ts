@@ -1,4 +1,4 @@
-import { NotFoundException } from '@nestjs/common';
+import { ConflictException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -249,6 +249,35 @@ describe('LogAnalysisJobsService', () => {
       ).rejects.toThrow(new NotFoundException('Remote server not found'));
 
       // Assert — side effects
+      expect(repository.save).not.toHaveBeenCalled();
+    });
+
+    it('should throw when remote server already has a job', async () => {
+      // Arrange
+      const logSource = sampleLogResource({ id: 'ls-1' });
+      const remoteServer = sampleRemoteServer({ id: 'rs-1' });
+      const existingJob = sampleJob({ id: 'existing', remoteServer });
+      logResourcesService.findOne.mockResolvedValue(logSource);
+      remoteServersService.findOne.mockResolvedValue(remoteServer);
+      repository.findOne.mockResolvedValue(existingJob);
+
+      // Act + Assert
+      await expect(
+        service.create(
+          {
+            name: 'new-job',
+            type: LogAnalysisJobType.ONE_TIME,
+            logSourceId: 'ls-1',
+            remoteServerId: 'rs-1',
+          },
+          'owner-1',
+        ),
+      ).rejects.toThrow(
+        new ConflictException('Remote server already has an analysis job'),
+      );
+
+      // Assert — side effects
+      expect(repository.create).not.toHaveBeenCalled();
       expect(repository.save).not.toHaveBeenCalled();
     });
   });

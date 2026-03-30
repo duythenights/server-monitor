@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateLogAnalysisJobDto } from './dto/create-log-analysis-job.dto';
 import { UpdateLogAnalysisJobDto } from './dto/update-log-analysis-job.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -37,6 +41,14 @@ export class LogAnalysisJobsService {
     if (!remoteServer) {
       throw new NotFoundException('Remote server not found');
     }
+
+    const existingJob = await this.logAnalysisJobRepository.findOne({
+      where: { remoteServer: { id: remoteServer.id } },
+    });
+    if (existingJob) {
+      throw new ConflictException('Remote server already has an analysis job');
+    }
+
     const logAnalysisJob = this.logAnalysisJobRepository.create({
       ...rest,
       ownerId,
