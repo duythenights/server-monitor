@@ -37,6 +37,9 @@ export class LogAnalysisJobEntity {
   @Column({ nullable: true })
   description?: string;
 
+  @Column({ type: 'simple-json', nullable: true })
+  ticketingSystemConfig?: Record<string, unknown>;
+
   @Column()
   status: LogAnalysisJobStatus;
 

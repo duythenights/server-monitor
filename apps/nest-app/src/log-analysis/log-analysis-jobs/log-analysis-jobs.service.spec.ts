@@ -64,6 +64,10 @@ function sampleJob(
     ownerId: 'owner-1',
     name: 'job',
     description: 'd',
+    ticketingSystemConfig: {
+      'api-key': '123',
+      'api-url': 'http://localhost:3000',
+    },
     status: LogAnalysisJobStatus.INITIALIZED,
     type: LogAnalysisJobType.ONE_TIME,
     createdAt: now,

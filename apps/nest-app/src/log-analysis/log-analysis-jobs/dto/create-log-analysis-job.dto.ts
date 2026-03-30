@@ -1,4 +1,10 @@
-import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsObject,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { LogAnalysisJobType } from '../entities/log-analysis-job.entity';
 
 export class CreateLogAnalysisJobDto {
@@ -20,4 +26,8 @@ export class CreateLogAnalysisJobDto {
 
   @IsString()
   remoteServerId?: string;
+
+  @IsObject()
+  @IsOptional()
+  ticketingSystemConfig?: Record<string, unknown>;
 }
