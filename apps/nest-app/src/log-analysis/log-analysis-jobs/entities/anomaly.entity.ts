@@ -15,10 +15,19 @@ export enum AnomalySeverity {
   CRITICAL = 'critical',
 }
 
+export enum AnomalyStatus {
+  OPEN = 'open',
+  IN_PROGRESS = 'in_progress',
+  CLOSED = 'closed',
+}
+
 @Entity()
 export class AnomalyEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @Column()
+  status: AnomalyStatus;
 
   @Column()
   title: string;
@@ -39,5 +48,5 @@ export class AnomalyEntity {
   ticketInfo?: Record<string, unknown>;
 
   @ManyToOne(() => LogAnalysisJobEntity, (job) => job.anomalies)
-  analysisJob: LogAnalysisJobEntity;
+  logAnalysisJob: LogAnalysisJobEntity;
 }

@@ -62,7 +62,7 @@ export class LogAnalysisJobEntity {
   @JoinColumn()
   remoteServer: RemoteServerEntity;
 
-  @OneToMany(() => AnomalyEntity, (anomaly) => anomaly.analysisJob, {
+  @OneToMany(() => AnomalyEntity, (anomaly) => anomaly.logAnalysisJob, {
     onDelete: 'CASCADE',
   })
   anomalies: AnomalyEntity[];

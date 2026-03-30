@@ -15,5 +15,6 @@ import { AnomalyEntity } from './entities/anomaly.entity';
     LogResourcesModule,
     RemoteServersModule,
   ],
+  exports: [LogAnalysisJobsService],
 })
 export class LogAnalysisJobsModule {}

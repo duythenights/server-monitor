@@ -19,6 +19,7 @@ import {
   LogAnalysisJobType,
 } from './entities/log-analysis-job.entity';
 import { LogAnalysisJobsService } from './log-analysis-jobs.service';
+import { AnomalyEntity } from './entities/anomaly.entity';
 
 function sampleLogResource(
   overrides: Partial<LogResourceEntity> = {},
@@ -81,6 +82,7 @@ function sampleJob(
 describe('LogAnalysisJobsService', () => {
   let service: LogAnalysisJobsService;
   let repository: Mocked<Repository<LogAnalysisJobEntity>>;
+  let anomalyRepository: Mocked<Repository<AnomalyEntity>>;
   let logResourcesService: Mocked<LogResourcesService>;
   let remoteServersService: Mocked<RemoteServersService>;
 
@@ -91,6 +93,10 @@ describe('LogAnalysisJobsService', () => {
         {
           provide: getRepositoryToken(LogAnalysisJobEntity),
           useValue: mock<Repository<LogAnalysisJobEntity>>(),
+        },
+        {
+          provide: getRepositoryToken(AnomalyEntity),
+          useValue: mock<Repository<AnomalyEntity>>(),
         },
         {
           provide: LogResourcesService,
@@ -106,6 +112,9 @@ describe('LogAnalysisJobsService', () => {
     service = module.get<LogAnalysisJobsService>(LogAnalysisJobsService);
     repository = module.get<Mocked<Repository<LogAnalysisJobEntity>>>(
       getRepositoryToken(LogAnalysisJobEntity),
+    );
+    anomalyRepository = module.get<Mocked<Repository<AnomalyEntity>>>(
+      getRepositoryToken(AnomalyEntity),
     );
     logResourcesService =
       module.get<Mocked<LogResourcesService>>(LogResourcesService);

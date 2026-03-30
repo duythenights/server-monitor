@@ -10,16 +10,23 @@ import {
   LogAnalysisJobEntity,
   LogAnalysisJobStatus,
 } from './entities/log-analysis-job.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { LogResourceEntity } from '@/log-resources/entities/log-resource.entity';
 import { LogResourcesService } from '@/log-resources/log-resources.service';
 import { RemoteServersService } from '@/remote-servers/remote-servers.service';
+import {
+  AnomalyEntity,
+  AnomalySeverity,
+  AnomalyStatus,
+} from './entities/anomaly.entity';
 
 @Injectable()
 export class LogAnalysisJobsService {
   constructor(
     @InjectRepository(LogAnalysisJobEntity)
     private readonly logAnalysisJobRepository: Repository<LogAnalysisJobEntity>,
+    @InjectRepository(AnomalyEntity)
+    private readonly anomalyRepository: Repository<AnomalyEntity>,
     private readonly logResourcesService: LogResourcesService,
     private readonly remoteServersService: RemoteServersService,
   ) {}
@@ -94,5 +101,31 @@ export class LogAnalysisJobsService {
       throw new NotFoundException('Log analysis job not found');
     }
     return this.logAnalysisJobRepository.remove(logAnalysisJob);
+  }
+
+  async addAnomaly(
+    job: LogAnalysisJobEntity,
+    anomaly: {
+      title: string;
+      description?: string;
+      severity: AnomalySeverity;
+    },
+  ) {
+    const existingAnomaly = await this.anomalyRepository.findOne({
+      where: {
+        logAnalysisJob: { id: job.id },
+        status: In([AnomalyStatus.OPEN, AnomalyStatus.IN_PROGRESS]),
+      },
+    });
+    if (existingAnomaly) {
+      return;
+    }
+
+    const newAnomaly = this.anomalyRepository.create({
+      ...anomaly,
+      logAnalysisJob: job,
+      status: AnomalyStatus.OPEN,
+    });
+    await this.anomalyRepository.save(newAnomaly);
   }
 }
