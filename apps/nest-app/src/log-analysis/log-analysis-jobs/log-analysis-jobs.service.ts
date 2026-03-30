@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateLogAnalysisJobDto } from './dto/create-log-analysis-job.dto';
 import { UpdateLogAnalysisJobDto } from './dto/update-log-analysis-job.dto';
@@ -8,6 +7,7 @@ import {
   LogAnalysisJobStatus,
 } from './entities/log-analysis-job.entity';
 import { Repository } from 'typeorm';
+import { LogResourceEntity } from '@/log-resources/entities/log-resource.entity';
 import { LogResourcesService } from '@/log-resources/log-resources.service';
 import { RemoteServersService } from '@/remote-servers/remote-servers.service';
 
@@ -21,13 +21,15 @@ export class LogAnalysisJobsService {
   ) {}
   async create(props: CreateLogAnalysisJobDto, ownerId: string) {
     const { logSourceId, remoteServerId, ...rest } = props;
-    const logSource = await this.logResourcesService.findOne(
-      logSourceId,
-      ownerId,
-    );
-    if (!logSource) {
-      throw new NotFoundException('Log source not found');
+
+    let logSource: LogResourceEntity | null | undefined;
+    if (logSourceId) {
+      logSource = await this.logResourcesService.findOne(logSourceId, ownerId);
+      if (!logSource) {
+        throw new NotFoundException('Log source not found');
+      }
     }
+
     const remoteServer = await this.remoteServersService.findOne(
       remoteServerId!,
       ownerId,
@@ -39,7 +41,7 @@ export class LogAnalysisJobsService {
       ...rest,
       ownerId,
       status: LogAnalysisJobStatus.INITIALIZED,
-      logSource,
+      ...(logSource && { logSource }),
       remoteServer,
     });
     return this.logAnalysisJobRepository.save(logAnalysisJob);

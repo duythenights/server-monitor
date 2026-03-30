@@ -118,7 +118,7 @@ describe('LogAnalysisJobsService', () => {
   });
 
   describe('create', () => {
-    it('should resolve log source and remote server then save job', async () => {
+    it('should resolve log source and remote server then save job when logSourceId is provided', async () => {
       // Arrange
       const ownerId = 'owner-1';
       const logSource = sampleLogResource({ id: 'ls-1' });
@@ -158,6 +158,48 @@ describe('LogAnalysisJobsService', () => {
         ownerId,
         status: LogAnalysisJobStatus.INITIALIZED,
         logSource,
+        remoteServer,
+      });
+      expect(repository.save).toHaveBeenCalledWith(created);
+      expect(result).toEqual(saved);
+    });
+
+    it('should skip log source lookup and save job without logSource when logSourceId is not provided', async () => {
+      // Arrange
+      const ownerId = 'owner-1';
+      const remoteServer = sampleRemoteServer({ id: 'rs-1' });
+      const props = {
+        name: 'analysis-no-log-src',
+        description: 'no log source',
+        type: LogAnalysisJobType.ONE_TIME,
+        remoteServerId: 'rs-1',
+      };
+      const created = sampleJob({
+        ...props,
+        id: 'new-job-2',
+        logSource: undefined,
+        remoteServer,
+      });
+      const saved = { ...created } as LogAnalysisJobEntity;
+      remoteServersService.findOne.mockResolvedValue(remoteServer);
+      repository.create.mockReturnValue(created);
+      repository.save.mockResolvedValue(saved);
+
+      // Act
+      const result = await service.create(props, ownerId);
+
+      // Assert — logResourcesService should NOT be called
+      expect(logResourcesService.findOne).not.toHaveBeenCalled();
+      expect(remoteServersService.findOne).toHaveBeenCalledWith(
+        'rs-1',
+        ownerId,
+      );
+      expect(repository.create).toHaveBeenCalledWith({
+        name: props.name,
+        description: props.description,
+        type: props.type,
+        ownerId,
+        status: LogAnalysisJobStatus.INITIALIZED,
         remoteServer,
       });
       expect(repository.save).toHaveBeenCalledWith(created);
