@@ -1,7 +1,7 @@
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { LogResourcesService } from '@/log-resources/log-resources.service';
 import { RemoteServersService } from '@/remote-servers/remote-servers.service';
 import {
@@ -19,7 +19,11 @@ import {
   LogAnalysisJobType,
 } from './entities/log-analysis-job.entity';
 import { LogAnalysisJobsService } from './log-analysis-jobs.service';
-import { AnomalyEntity } from './entities/anomaly.entity';
+import {
+  AnomalyEntity,
+  AnomalySeverity,
+  AnomalyStatus,
+} from './entities/anomaly.entity';
 
 function sampleLogResource(
   overrides: Partial<LogResourceEntity> = {},
@@ -391,6 +395,62 @@ describe('LogAnalysisJobsService', () => {
 
       // Assert — side effects
       expect(repository.remove).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('addAnomaly', () => {
+    it('should not add a new anomaly if an OPEN or IN_PROGRESS one already exists for the job', async () => {
+      const job = sampleJob({ id: 'job-1' });
+      const anomalyData = {
+        title: 'Test Anomaly',
+        severity: AnomalySeverity.HIGH,
+      };
+
+      // Mock finding an existing active anomaly
+      anomalyRepository.findOne.mockResolvedValue({
+        id: 'existing-anomaly',
+      } as AnomalyEntity);
+
+      await service.addAnomaly(job, anomalyData);
+
+      expect(anomalyRepository.findOne).toHaveBeenCalledWith({
+        where: {
+          logAnalysisJob: { id: job.id },
+          status: In([AnomalyStatus.OPEN, AnomalyStatus.IN_PROGRESS]),
+        },
+      });
+      // Should return early and not create/save
+      expect(anomalyRepository.create).not.toHaveBeenCalled();
+      expect(anomalyRepository.save).not.toHaveBeenCalled();
+    });
+
+    it('should create and save a new anomaly if no active one exists', async () => {
+      const job = sampleJob({ id: 'job-1' });
+      const anomalyData = {
+        title: 'New Anomaly',
+        severity: AnomalySeverity.CRITICAL,
+      };
+
+      // Mock no existing active anomaly
+      anomalyRepository.findOne.mockResolvedValue(null);
+
+      const createdAnomaly = {
+        ...anomalyData,
+        logAnalysisJob: job,
+        status: AnomalyStatus.OPEN,
+      } as AnomalyEntity;
+      anomalyRepository.create.mockReturnValue(createdAnomaly);
+      anomalyRepository.save.mockResolvedValue(createdAnomaly);
+
+      await service.addAnomaly(job, anomalyData);
+
+      expect(anomalyRepository.findOne).toHaveBeenCalled();
+      expect(anomalyRepository.create).toHaveBeenCalledWith({
+        ...anomalyData,
+        logAnalysisJob: job,
+        status: AnomalyStatus.OPEN,
+      });
+      expect(anomalyRepository.save).toHaveBeenCalledWith(createdAnomaly);
     });
   });
 });
