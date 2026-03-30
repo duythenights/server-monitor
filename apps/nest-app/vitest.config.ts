@@ -1,3 +1,4 @@
+import path from 'path';
 import swc from 'unplugin-swc';
 import { defineConfig } from 'vitest/config';
 
@@ -17,4 +18,9 @@ export default defineConfig({
     exclude: ['node_modules', 'dist', '.next', 'out', 'coverage'],
   },
   plugins: [swc.vite({})],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'src'),
+    },
+  },
 });

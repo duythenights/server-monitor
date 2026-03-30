@@ -8,5 +8,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
   imports: [TypeOrmModule.forFeature([RemoteServerEntity])],
   controllers: [RemoteServersController],
   providers: [RemoteServersService],
+  exports: [RemoteServersService],
 })
 export class RemoteServersModule {}

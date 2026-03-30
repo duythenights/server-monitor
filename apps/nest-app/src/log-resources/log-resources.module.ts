@@ -8,5 +8,6 @@ import { LogResourceEntity } from './entities/log-resource.entity';
   imports: [TypeOrmModule.forFeature([LogResourceEntity])],
   controllers: [LogResourcesController],
   providers: [LogResourcesService],
+  exports: [LogResourcesService],
 })
 export class LogResourcesModule {}

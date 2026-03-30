@@ -36,4 +36,16 @@ export default tseslint.config(
       '@typescript-eslint/unbound-method': 'off',
     },
   },
+  /**
+   * Path alias `@/` + TypeORM relation lambdas can be typed as `error` in some
+   * IDE ESLint runs; tsc and CLI eslint stay clean. Relax only where it spuriously fires.
+   */
+  {
+    files: ['**/*.spec.ts', '**/entities/**/*.entity.ts'],
+    rules: {
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
+    },
+  },
 );
