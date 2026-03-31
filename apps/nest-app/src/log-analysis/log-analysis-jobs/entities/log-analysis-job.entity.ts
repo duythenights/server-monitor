@@ -58,7 +58,7 @@ export class LogAnalysisJobEntity {
   @JoinColumn()
   logSource?: LogResourceEntity;
 
-  @OneToOne(() => RemoteServerEntity)
+  @OneToOne(() => RemoteServerEntity, { onDelete: 'CASCADE' })
   @JoinColumn()
   remoteServer: RemoteServerEntity;
 

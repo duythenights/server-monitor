@@ -11,6 +11,7 @@ import {
   RemoteServerStatus,
 } from './entities/remote-server.entity';
 import { RemoteServersService } from './remote-servers.service';
+import { REMOTE_SERVERS_LIMIT } from './remote-servers.constants';
 
 function sampleRemoteServer(
   overrides: Partial<RemoteServerEntity> = {},
@@ -93,7 +94,7 @@ describe('RemoteServersService', () => {
         name: 'srv-1',
         config: { host: '10.0.0.1' },
       };
-      repository.count.mockResolvedValue(3);
+      repository.count.mockResolvedValue(REMOTE_SERVERS_LIMIT);
 
       await expect(service.create(props, ownerId)).rejects.toThrow(
         new ConflictException('You have reached the limit of remote servers'),

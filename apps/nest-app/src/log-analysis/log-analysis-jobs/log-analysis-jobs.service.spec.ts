@@ -24,6 +24,7 @@ import {
   AnomalySeverity,
   AnomalyStatus,
 } from './entities/anomaly.entity';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 function sampleLogResource(
   overrides: Partial<LogResourceEntity> = {},
@@ -109,6 +110,10 @@ describe('LogAnalysisJobsService', () => {
         {
           provide: RemoteServersService,
           useValue: mock<RemoteServersService>(),
+        },
+        {
+          provide: EventEmitter2,
+          useValue: mock<EventEmitter2>(),
         },
       ],
     }).compile();

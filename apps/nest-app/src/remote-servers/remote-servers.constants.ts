@@ -1,1 +1,1 @@
-export const REMOTE_SERVERS_LIMIT = 3;
+export const REMOTE_SERVERS_LIMIT = 10;

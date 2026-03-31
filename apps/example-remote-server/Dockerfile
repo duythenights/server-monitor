@@ -36,10 +36,4 @@ RUN mkdir -p /app/logs
 # Expose the Express server port
 EXPOSE 4000
 
-# Environment variables (defaults)
-ENV PORT=4000
-ENV FB_HTTP_HOST=host.docker.internal
-ENV FB_HTTP_PORT=3000
-ENV FB_HTTP_URI=/log-analysis/ingest/job-123
-
 ENTRYPOINT ["/entrypoint.sh"]

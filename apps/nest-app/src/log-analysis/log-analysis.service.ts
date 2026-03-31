@@ -12,8 +12,10 @@ export class LogAnalysisService {
     ownerId: string,
     logs: Array<Record<string, any>>,
   ) {
+    console.log('Ingesting logs for job:', jobId);
     const job = await this.logAnalysisJobsService.findOne(jobId, ownerId);
     if (!job) {
+      console.log('Job not found');
       throw new NotFoundException('Job not found');
     }
 
