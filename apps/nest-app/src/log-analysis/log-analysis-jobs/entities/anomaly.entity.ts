@@ -26,7 +26,7 @@ export class AnomalyEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ type: 'text', default: AnomalyStatus.OPEN })
   status: AnomalyStatus;
 
   @Column()
@@ -35,7 +35,7 @@ export class AnomalyEntity {
   @Column({ nullable: true })
   description?: string;
 
-  @Column()
+  @Column({ type: 'text', default: AnomalySeverity.LOW })
   severity: AnomalySeverity;
 
   @CreateDateColumn()

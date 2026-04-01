@@ -26,7 +26,7 @@ export class RemoteServerEntity {
   @Column({ type: 'simple-json', nullable: true })
   config: Record<string, any>;
 
-  @Column()
+  @Column({ type: 'text', default: RemoteServerStatus.UNKNOWN })
   status: RemoteServerStatus;
 
   @CreateDateColumn()

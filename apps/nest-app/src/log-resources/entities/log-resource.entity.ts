@@ -29,10 +29,10 @@ export class LogResourceEntity {
   @Column({ nullable: true })
   description?: string;
 
-  @Column()
+  @Column({ type: 'text', default: LogSourseStatus.UNKNOWN })
   status: LogSourseStatus;
 
-  @Column()
+  @Column({ type: 'text', default: LogSourseType.ZABBIX })
   type: LogSourseType;
 
   @Column({ type: 'simple-json' })

@@ -43,10 +43,10 @@ export class LogAnalysisJobEntity {
   @Column({ type: 'simple-json', nullable: true })
   ticketingSystemConfig?: Record<string, unknown>;
 
-  @Column()
+  @Column({ type: 'text', default: LogAnalysisJobStatus.INITIALIZED })
   status: LogAnalysisJobStatus;
 
-  @Column()
+  @Column({ type: 'text', default: LogAnalysisJobType.ONE_TIME })
   type: LogAnalysisJobType;
 
   @CreateDateColumn()

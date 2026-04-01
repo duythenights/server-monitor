@@ -10,8 +10,8 @@ import {
 import { LogAnalysisJobsService } from './log-analysis-jobs.service';
 import { CreateLogAnalysisJobDto } from './dto/create-log-analysis-job.dto';
 import { UpdateLogAnalysisJobDto } from './dto/update-log-analysis-job.dto';
-import { CurrentUser } from 'src/auth/current-user.decorator';
-import type { ICurrentUser } from 'src/auth/current-user.interface';
+import { CurrentUser } from '@/auth/current-user.decorator';
+import type { ICurrentUser } from '@/auth/current-user.interface';
 
 @Controller('log-analysis-jobs')
 export class LogAnalysisJobsController {

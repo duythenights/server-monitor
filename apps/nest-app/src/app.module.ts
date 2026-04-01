@@ -8,15 +8,10 @@ import { LogResourcesModule } from './log-resources/log-resources.module';
 import { LogAnalysisModule } from './log-analysis/log-analysis.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { TicketingModule } from './ticketing/ticketing.module';
+import { DatabaseModule } from './database/database.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'better-sqlite3',
-      database: 'db.sqlite',
-      autoLoadEntities: true,
-      synchronize: true,
-    }),
     UsersModule,
     RemoteServersModule,
     AuthModule,
@@ -24,6 +19,7 @@ import { TicketingModule } from './ticketing/ticketing.module';
     LogAnalysisModule,
     TicketingModule,
     EventEmitterModule.forRoot(),
+    DatabaseModule,
   ],
   controllers: [AppController],
   providers: [],

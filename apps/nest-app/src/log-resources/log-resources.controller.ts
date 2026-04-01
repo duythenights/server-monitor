@@ -10,8 +10,8 @@ import {
 import { LogResourcesService } from './log-resources.service';
 import { CreateLogResourceDto } from './dto/create-log-resource.dto';
 import { UpdateLogResourceDto } from './dto/update-log-resource.dto';
-import { CurrentUser } from 'src/auth/current-user.decorator';
-import type { ICurrentUser } from 'src/auth/current-user.interface';
+import { CurrentUser } from '@/auth/current-user.decorator';
+import type { ICurrentUser } from '@/auth/current-user.interface';
 
 @Controller('log-resources')
 export class LogResourcesController {

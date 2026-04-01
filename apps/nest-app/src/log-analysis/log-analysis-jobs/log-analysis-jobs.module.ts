@@ -3,8 +3,8 @@ import { LogAnalysisJobsService } from './log-analysis-jobs.service';
 import { LogAnalysisJobsController } from './log-analysis-jobs.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { LogAnalysisJobEntity } from './entities/log-analysis-job.entity';
-import { LogResourcesModule } from 'src/log-resources/log-resources.module';
-import { RemoteServersModule } from 'src/remote-servers/remote-servers.module';
+import { LogResourcesModule } from '@/log-resources/log-resources.module';
+import { RemoteServersModule } from '@/remote-servers/remote-servers.module';
 import { AnomalyEntity } from './entities/anomaly.entity';
 
 @Module({
