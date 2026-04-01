@@ -1,6 +1,4 @@
-import { AnomalyEntity } from '@/log-analysis/log-analysis-jobs/entities/anomaly.entity';
 import { AppEvent } from './app-event';
-import { LogAnalysisJobEntity } from '@/log-analysis/log-analysis-jobs/entities/log-analysis-job.entity';
 
 export interface AnomalyCreatedEventPayload {
   ownerId: string;

@@ -5,7 +5,7 @@ import { ITicketingProvider } from './ticketing-provider.interface';
 @Injectable()
 export class TicketingProviderFactory {
   createProvider(config: Record<string, any>): ITicketingProvider {
-    switch (config.provider) {
+    switch (config.type) {
       case ServiceNowTicketingProvider.name:
         return new ServiceNowTicketingProvider(config);
       default:

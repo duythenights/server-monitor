@@ -114,7 +114,6 @@ export class LogAnalysisJobsService {
       severity: AnomalySeverity;
     },
   ) {
-    console.log('Adding anomaly for job:', job.id);
     const existingAnomaly = await this.anomalyRepository.findOne({
       where: {
         logAnalysisJob: { id: job.id },
@@ -122,7 +121,6 @@ export class LogAnalysisJobsService {
       },
     });
     if (existingAnomaly) {
-      console.log('Anomaly already exists for job:', job.id);
       return;
     }
 
@@ -132,11 +130,6 @@ export class LogAnalysisJobsService {
       status: AnomalyStatus.OPEN,
     });
     await this.anomalyRepository.save(newAnomaly);
-    console.log('Anomaly created for job:', job.id);
-    console.log({
-      anomaly: newAnomaly,
-      job,
-    });
     this.eventEmitter.emit(
       AnomalyCreatedEvent.name,
       new AnomalyCreatedEvent({

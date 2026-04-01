@@ -9,7 +9,7 @@ import { DatabaseModule } from '@/database/database.module';
 import { getDataSourceToken } from '@nestjs/typeorm';
 import { resetDatabase } from './test-utils';
 
-describe('AppController (e2e)', () => {
+describe('Auth (e2e)', () => {
   let app: INestApplication<App>;
   let dataSource: DataSource;
   let moduleFixture: TestingModule;

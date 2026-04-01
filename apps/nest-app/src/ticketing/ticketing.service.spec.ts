@@ -1,5 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException } from '@nestjs/common';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { TicketingService } from './ticketing.service';
 import { TicketingProviderFactory } from './ticketing-providers/ticketing-provider.factory';
 import { AnomalyCreatedEvent } from '@/shared/events/anomaly.event';
@@ -73,6 +75,7 @@ describe('TicketingService', () => {
   let service: TicketingService;
   let ticketingProviderFactory: Mocked<TicketingProviderFactory>;
   let logAnalysisJobsService: Mocked<LogAnalysisJobsService>;
+  let anomalyRepository: Mocked<Repository<AnomalyEntity>>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -86,6 +89,10 @@ describe('TicketingService', () => {
           provide: LogAnalysisJobsService,
           useValue: mock<LogAnalysisJobsService>(),
         },
+        {
+          provide: getRepositoryToken(AnomalyEntity),
+          useValue: mock<Repository<AnomalyEntity>>(),
+        },
       ],
     }).compile();
 
@@ -95,6 +102,9 @@ describe('TicketingService', () => {
     );
     logAnalysisJobsService = module.get<Mocked<LogAnalysisJobsService>>(
       LogAnalysisJobsService,
+    );
+    anomalyRepository = module.get<Mocked<Repository<AnomalyEntity>>>(
+      getRepositoryToken(AnomalyEntity),
     );
   });
 
@@ -119,10 +129,11 @@ describe('TicketingService', () => {
       expect(ticketingProviderFactory.createProvider).not.toHaveBeenCalled();
     });
 
-    it('should throw NotFoundException when anomaly is not found in job', async () => {
+    it('should throw NotFoundException when anomaly is not found', async () => {
       // Arrange
-      const job = sampleJob({ anomalies: [sampleAnomaly({ id: 'other-id' })] });
+      const job = sampleJob();
       logAnalysisJobsService.findOne.mockResolvedValue(job);
+      anomalyRepository.findOneBy.mockResolvedValue(null);
       const event = new AnomalyCreatedEvent({
         ownerId: 'owner-1',
         jobId: 'job-1',
@@ -139,8 +150,9 @@ describe('TicketingService', () => {
     it('should return early when anomaly status is not OPEN', async () => {
       // Arrange
       const anomaly = sampleAnomaly({ status: AnomalyStatus.CLOSED });
-      const job = sampleJob({ anomalies: [anomaly] });
+      const job = sampleJob();
       logAnalysisJobsService.findOne.mockResolvedValue(job);
+      anomalyRepository.findOneBy.mockResolvedValue(anomaly);
       const event = new AnomalyCreatedEvent({
         ownerId: 'owner-1',
         jobId: 'job-1',
@@ -159,6 +171,7 @@ describe('TicketingService', () => {
       // Arrange
       const job = sampleJob({ ticketingSystemConfig: undefined });
       logAnalysisJobsService.findOne.mockResolvedValue(job);
+      anomalyRepository.findOneBy.mockResolvedValue(sampleAnomaly());
       const event = new AnomalyCreatedEvent({
         ownerId: 'owner-1',
         jobId: 'job-1',
@@ -179,6 +192,7 @@ describe('TicketingService', () => {
         ticketingSystemConfig: { provider: 'x' },
       });
       logAnalysisJobsService.findOne.mockResolvedValue(job);
+      anomalyRepository.findOneBy.mockResolvedValue(sampleAnomaly());
       const event = new AnomalyCreatedEvent({
         ownerId: 'owner-1',
         jobId: 'job-1',
@@ -201,8 +215,9 @@ describe('TicketingService', () => {
         description: 'Disk usage at 100%',
         severity: AnomalySeverity.CRITICAL,
       });
-      const job = sampleJob({ anomalies: [anomaly] });
+      const job = sampleJob();
       logAnalysisJobsService.findOne.mockResolvedValue(job);
+      anomalyRepository.findOneBy.mockResolvedValue(anomaly);
 
       const ticket = sampleTicket({
         title: 'Disk full',

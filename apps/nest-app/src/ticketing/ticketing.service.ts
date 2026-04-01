@@ -1,10 +1,13 @@
 import {
+  AnomalyEntity,
   AnomalySeverity,
   AnomalyStatus,
 } from '@/log-analysis/log-analysis-jobs/entities/anomaly.entity';
 import { AnomalyCreatedEvent } from '@/shared/events/anomaly.event';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { TicketingProviderFactory } from './ticketing-providers/ticketing-provider.factory';
 import { TicketSeverity } from './ticketing.types';
 import { LogAnalysisJobsService } from '@/log-analysis/log-analysis-jobs/log-analysis-jobs.service';
@@ -14,6 +17,8 @@ export class TicketingService {
   constructor(
     private readonly ticketingProviderFactory: TicketingProviderFactory,
     private readonly logAnalysisJobsService: LogAnalysisJobsService,
+    @InjectRepository(AnomalyEntity)
+    private readonly anomalyRepository: Repository<AnomalyEntity>,
   ) {}
   @OnEvent(AnomalyCreatedEvent.name)
   async handleAnomalyCreatedEvent(event: AnomalyCreatedEvent) {
@@ -24,7 +29,7 @@ export class TicketingService {
       throw new NotFoundException('Job not found');
     }
 
-    const anomaly = job.anomalies.find((anomaly) => anomaly.id === anomalyId);
+    const anomaly = await this.anomalyRepository.findOneBy({ id: anomalyId });
     if (!anomaly) {
       throw new NotFoundException('Anomaly not found');
     }
