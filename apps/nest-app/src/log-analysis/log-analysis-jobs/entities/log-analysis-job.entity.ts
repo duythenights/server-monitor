@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -54,12 +55,10 @@ export class LogAnalysisJobEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToOne(() => LogResourceEntity, { nullable: true })
-  @JoinColumn()
+  @ManyToOne(() => LogResourceEntity, { nullable: true })
   logSource?: LogResourceEntity;
 
-  @OneToOne(() => RemoteServerEntity, { onDelete: 'CASCADE' })
-  @JoinColumn()
+  @ManyToOne(() => RemoteServerEntity, { onDelete: 'CASCADE' })
   remoteServer: RemoteServerEntity;
 
   @OneToMany(() => AnomalyEntity, (anomaly) => anomaly.logAnalysisJob, {
