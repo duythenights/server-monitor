@@ -3,7 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types';
 import { DataSource } from 'typeorm';
-import { AppModule } from './../src/app.module';
+import { AppModule } from '../src/app.module';
 import { DatabaseTestModule } from '@/database/database-test.module';
 import { DatabaseModule } from '@/database/database.module';
 import { getDataSourceToken } from '@nestjs/typeorm';
@@ -34,5 +34,11 @@ describe('AppController (e2e)', () => {
 
   it('should be defined', () => {
     expect(app).toBeDefined();
+  });
+
+  it('should get current user', async () => {
+    const response = await request(app.getHttpServer()).get('/auth/me');
+    expect(response.status).toBe(200);
+    expect(response.body).toBeDefined();
   });
 });
